@@ -1,0 +1,25 @@
+{
+  "name": "force-extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "make-crx": "node make/make-crx.js",
+    "start": "node make/make-crx.js && node make/start-chrome-and-host-crx.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ./src/ ./make/"
+  },
+  "type": "module",
+  "author": "Andrew P Montgomery",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "crx": "^5.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.24.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1"
+  }
+}
