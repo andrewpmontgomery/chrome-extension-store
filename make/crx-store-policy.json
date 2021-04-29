@@ -1,0 +1,10 @@
+{
+  "ExtensionInstallForcelist": [
+    "focedodpfclchannlpocobimkdiabgfh;http://localhost:5000/extensions/focedodpfclchannlpocobimkdiabgfh/update.xml"
+  ],
+  "ExtensionInstallSources": [
+    "http://localhost:5000/*"
+  ],
+  "DeveloperToolsAvailability": 1,
+  "EnterpriseHardwarePlatformAPIEnabled": true
+}

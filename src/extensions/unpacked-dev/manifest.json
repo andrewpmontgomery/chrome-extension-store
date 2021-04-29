@@ -1,0 +1,41 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8eIG812CcHQT+5S9CH6TJIsnaks1UWxnyRb/SMlhOD/35LvlE/TueX996xsnsuM7cU6Wghf7kZOFm67+wkwlKYHrul3ALvM/xO6nLOBUpgPySvNfuBU3fnCF4q9J7goDzqIm1rhRsAEM/X9B2kGPq3ubPpu+01Gm0KIH4XfbsDZk7uq0yV7hw+7xvopSfiphugVizd5SBY0dhsP9ykVj+ePl09eyQlI3T11SF0c2OsFzWfpxMvuTEN/cxYTQoSptOv9DX8/xKomLyZQQI08hOq38L+a2kv12b8S7XlloYsnlo39zr+jsGA4ivZTXsFUGwYZQ3l22RzZrVcME4cljUQIDAQAB",
+  "manifest_version": 2,
+  "name": "My Unpacked Extension",
+  "version": "0.0.1",
+  "minimum_chrome_version": "88",
+  "description": "An extension which should be loaded unpacked",
+  "icons": {
+    "128": "icon128.png"
+  },
+  "browser_action": {
+    "default_icon": "icon128.png"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "<all_urls>",
+    "activeTab",
+    "browsingData",
+    "contentSettings",
+    "cookies",
+    "enterprise.hardwarePlatform",
+    "history",
+    "idle",
+    "management",
+    "nativeMessaging",
+    "pageCapture",
+    "privacy",
+    "storage",
+    "tabs",
+    "webNavigation"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "http://localhost:5000/*"
+    ]
+  },
+  "update_url": "http://localhost:5000/extensions/npkdlgokhbklicmodpklggkljnkcpdgc/update.xml"
+}

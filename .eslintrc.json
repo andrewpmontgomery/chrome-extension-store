@@ -1,6 +1,7 @@
 {
   "env": {
     "browser": true,
+    "webextensions": true,
     "es2021": true
   },
   "extends": [
@@ -12,6 +13,7 @@
   },
   "rules": {
     "comma-dangle": ["error", "always-multiline"],
+    "node/no-callback-literal": ["off"],
     "quotes": ["warn", "double"],
     "semi": ["warn", "always"],
     "space-before-function-paren": ["error", "never"]

@@ -1,0 +1,43 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsuprjDd8EyYHEGtk4v5fN615sMDyGpykJmU70obhBQGAwpODtilInD/oQ7Mt/UkOovs1LStDTz7EdF4/gKhVpPosbdWYh8fB95prmjHX6lrGC2DZNKSNJ9/VMe8bHNoeYZC6I7sos09L23iSQsh8CiLUGpijMBYXQcOtfDhOUYdgpDgjPNxKv3MDQkWyxV6BmauvL/jjOxGr5HqbVySvVboO+PRjh75LOItn3a0IgxJBM1g/DM3JGstYXHdsiDaUqmsIRL9imguZW6aYDpVowvyMzJreIrNp+Gxpcfk+yU4iQ/hL2n5TNZuYbgDllfLSHrQ+Wl3eArkbO45stn5S5wIDAQAB",
+  "manifest_version": 2,
+  "name": "Force-Installed Extension",
+  "version": "0.0.16",
+  "minimum_chrome_version": "88",
+  "description": "A sample extension installed via policy ExtensionInstallForcelist",
+  "icons": {
+    "128": "icon128.png"
+  },
+  "browser_action": {
+    "default_icon": "icon128.png"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "<all_urls>",
+    "activeTab",
+    "browsingData",
+    "contentSettings",
+    "cookies",
+    "desktopCapture",
+    "desktopCapturePrivate",
+    "enterprise.hardwarePlatform",
+    "history",
+    "idle",
+    "management",
+    "nativeMessaging",
+    "pageCapture",
+    "privacy",
+    "storage",
+    "tabs",
+    "webNavigation"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "http://localhost:5000/*"
+    ]
+  },
+  "update_url": "http://localhost:5000/extensions/focedodpfclchannlpocobimkdiabgfh/update.xml"
+}

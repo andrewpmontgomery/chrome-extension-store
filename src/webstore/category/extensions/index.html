@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf8"/>
+  <meta name="viewport" content="width=device-width"/>
+  <title>Chrome Extension Store for Enterprise</title>
+  <script>
+    const $ = document.querySelector.bind(document);
+    window.addEventListener("load", function() {
+      loadPolicyJson();
+    });
+    let lastSavedPolicy = "";
+    async function loadPolicyJson() {
+      const policy = (await (await fetch("/api/policy", { method: "GET" })).text()).trim();
+      lastSavedPolicy = policy;
+      $("#txtPolicy").value = policy;
+    }
+    function onPolicyChange() {
+      const txtPolicy = $("#txtPolicy");
+      const isValid = isPolicyValidJson();
+      isValid ? txtPolicy.classList.remove("invalid") : txtPolicy.classList.add("invalid");
+      const btnSave = $("#btnSave");
+      isValid ? btnSave.classList.remove("invalid") : btnSave.classList.add("invalid");
+      btnSave.disabled = !isValid || lastSavedPolicy === txtPolicy.value;
+    }
+    function insertExtn() {
+      if (!isPolicyValidJson()) {
+        dialogAlert("Policy file is invalid JSON - please fix before adding/removing extension");
+      } else {
+        const json = JSON.parse($("#txtPolicy").value);
+        json.ExtensionInstallForcelist.push("focedodpfclchannlpocobimkdiabgfh;http://localhost:5000/extensions/focedodpfclchannlpocobimkdiabgfh/update.xml");
+        json.ExtensionInstallForcelist = [...(new Set(json.ExtensionInstallForcelist))];
+        $("#txtPolicy").value = JSON.stringify(json, null, 2);
+        onPolicyChange();
+      }
+    }
+    function removeExtn() {
+      if (!isPolicyValidJson()) {
+        dialogAlert("Policy file is invalid JSON - please fix before adding/removing extension");
+      } else {
+        const json = JSON.parse($("#txtPolicy").value);
+        json.ExtensionInstallForcelist = [];
+        $("#txtPolicy").value = JSON.stringify(json, null, 2);
+        onPolicyChange();
+      }
+    }
+    function testExtn() {
+      if (!chrome || !chrome.runtime || !chrome.runtime.sendMessage) {
+        dialogAlert("Chrome runtime API not available - is the extension installed?");
+      } else {
+        chrome.runtime.sendMessage("focedodpfclchannlpocobimkdiabgfh", { action: "get-hardware-platform-info" }, {}, (response) => {
+          dialogAlert(JSON.stringify(response));
+        });
+      }
+    }
+    async function saveChanges() {
+      const body = $("#txtPolicy").value;
+      const policy = await (await fetch("/api/policy", { method: "PUT", body: body })).text();
+      dialogAlert("Changes saved");
+      lastSavedPolicy = policy;
+      $("#txtPolicy").value = policy;
+      onPolicyChange();
+    }
+    function isPolicyValidJson() {
+      try {
+        JSON.parse($("#txtPolicy").value);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    function dialogAlert(msg) {
+      const dialog = document.getElementsByTagName("dialog")[0];
+      const dialogContent = document.getElementById("dialog-content");
+      dialogContent.textContent = msg;
+      dialog.showModal();
+    }
+
+    // this function only works with --apps-gallery-url command-line option
+    async function installWithManifest(appId) {
+      const manifest = (await (await fetch('/extensions/' + appId + '/manifest.json')).text());
+      if (!chrome.webstorePrivate) {
+        dialogAlert("WebStore APIs are not available.\nDid you launch Chrome with flag --apps-gallery-url=http://localhost:5000/webstore ?");
+        return;
+      }
+      chrome.webstorePrivate.beginInstallWithManifest3(
+        { id: appId, manifest: manifest },
+        function() {
+          if (chrome.runtime.lastError) {
+            const msg = chrome.runtime.lastError.message || "No last error message";
+            dialogAlert(msg);
+            console.log("Error on beginInstallWithManifest3: " + msg, chrome.runtime.lastError);
+          } else {
+            chrome.webstorePrivate.completeInstall(appId, function(d,e,f) {
+              if (chrome.runtime.lastError) {
+                const msg = chrome.runtime.lastError.message || "No last error message";
+                dialogAlert(msg);
+                console.log("Error on completeInstall: " + msg, chrome.runtime.lastError);
+              }
+            });
+          }
+        }
+      );
+    }
+    function getBrowser() {
+      if (navigator.userAgent.includes(" Trident/")) {
+        return "Internet Explorer";
+      } else if (navigator.userAgent.includes(" Firefox/")) {
+        return "Firefox";
+      } else if (navigator.userAgent.includes(" Edg/")) {
+        return "MS Edge";
+      } else if (navigator.userAgent.includes(" Chrome/")) {
+        return "Chrome";
+      } else {
+        return "unknown";
+      }
+    }
+  </script>
+  <style>
+    body {
+      margin: 1rem; padding: 1rem; border-radius: 6px; border: 1px solid #E1E4E8;
+      color: #24292E; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
+    }
+    h1,h2,h3,h4,h5,h6,b,strong { font-weight: 600; }
+    h1 { font-size: 2rem; border-bottom: 1px solid #EAECEF; padding-bottom: 0.3rem; }
+    h2 { font-size: 0.875rem; margin-top: 0; }
+    .spaced > li { margin-bottom: 0.5rem; }
+    textarea { width: calc(100% - 1rem); height: 11rem; font-family: monospace; overflow-x: scroll; white-space: nowrap; border: 1px solid #eee; border-radius: 6px; padding: 6px; background-color: #f5f5f5; font-size: 12px; }
+    .invalid { background-color: #fff0f0; }
+  </style>
+</head>
+<body>
+  <h2>/webstore/category/extensions/index.html</h2>
+  <h1>Chrome Extension Store for Enterprise</h1>
+  <p>This is a sample Chrome Extension Store for Enterprise use.
+    It explores how policy settings impact browser extensions.
+  </p>
+  <p>
+    If you followed the instructions in README.md, you should have the following policies
+    defined in chrome://policy :
+  </p>
+  <ul>
+    <li><b>ExtensionInstallForcelist</b> &mdash; Force-install an extension (either signed or unsigned, either from the official store or from a private store)</li>
+    <li><b>ExtensionInstallSources</b> &mdash; Allow extensions to be manually installed from a private store</li>
+    <li><b>DeveloperToolsAvailability</b> = 1 &mdash; Enable the developer tools on extensions (useful for testing, but best avoided in production)</li>
+    <li><b>EnterpriseHardwarePlatformAPIEnabled</b> = true &mdash; Enable the API enterprise.hardwarePlatform</li>
+    <li><s>OverrideSecurityRestrictionsOnInsecureOrigin</s> &mdash; (not required)</li>
+    <li>See below to make changes to the policy via a simple web form</li>
+  </ul>
+  <p>There are several ways to install an extension in Chrome:</p>
+  <ul class="spaced">
+    <li>
+      <b>Signed by Google, manually installed from the official web store</b><br/>
+      Subject to policies ExtensionInstallBlocklist and ExtensionInstallAllowlist,
+      you can install extensions directly from the official web store.<br/>
+      Install via <a href="https://chrome.google.com/webstore/detail/chromebook-device-info/fonnndfldddonnmjebmnnhbkcpoiagmp">https://chrome.google.com/webstore/detail/chromebook-device-info/fonnndfldddonnmjebmnnhbkcpoiagmp</a><br/>
+      Remove via chrome://extensions
+    </li>
+    <li>
+      <b>Signed by Google, manually installed from an enterprise store</b><br/>
+      If you're on a network air-gapped from the internet,
+      or you want to install an old version,
+      or you want tight control over specific extensions, versions, and users,
+      you can download signed extensions from the public store, serve them up in a private store,
+      and let users install them manually.
+      (For example: users in team A can download extension version 3.0, but users in team B can only download version 2.0)<br/>
+      Install directly: <a href="/extensions/fonnndfldddonnmjebmnnhbkcpoiagmp/binary.crx">http://localhost:5000/extensions/fonnndfldddonnmjebmnnhbkcpoiagmp/binary.crx</a><br/>
+      Remove via chrome://extensions
+    </li>
+    <li>
+      <b>Not signed by Google, manually installed from an enterprise store</b><br/>
+      For enterprise-developed extensions, with the user retaining control over whether to install the extension.<br/>
+      Install directly: <a href="/extensions/linkclcacemnpnaidfknmbacmkcecjfd/binary.crx">http://localhost:5000/extensions/linkclcacemnpnaidfknmbacmkcecjfd/binary.crx</a><br/>
+      Remove via chrome://extensions
+    </li>
+    <li>
+      <b>By force</b><br/>
+      For enterprise-developed extensions, with Group Policy admins controlling whether to install the extension.<br/>
+      Force-installed extensions gain access to one additional API: enterprise.hardwarePlatform.<br/>
+      Explore this extension's functionality via the Developer Tools panel in
+      chrome://extensions<br/>
+      Use these buttons to add/remove the demo force-installed extension from the policy file below (also click save changes).<br/>
+      <button onclick="insertExtn()">Add extension to policy</button>
+      <button onclick="removeExtn()">Remove extension from policy</button>
+      <button onclick="testExtn()">Test extension</button>
+      <br/>
+    </li>
+    <li>
+      <b>Load Unpacked</b><br/>
+      This is for developers. Enterprise admins should probably disable this functionality
+      by setting policy ExtensionInstallBlocklist to "*".<br/>
+      chrome://extensions
+    </li>
+    <li>
+      For testing purposes, you can also use the command-line parameter <code>--apps-gallery-url</code>
+      to specify a private web store. This isn't useful though.
+    </li>
+  </ul>
+  <p>
+    You can edit policy file "crx-store-policy.json" here:
+  </p>
+  <div>
+    <textarea id="txtPolicy" oninput="onPolicyChange()" spellcheck="false" autocomplete="off"></textarea>
+  </div>
+  <p>
+    <button id="btnSave" disabled onclick="saveChanges()">Save Changes</button>
+    After saving, go to chrome://policy and click "Reload policies".
+  </p>
+  <script>
+    document.writeln("<h4>Running in: " + getBrowser() + "</h4>");
+  </script>
+  <dialog>
+    <div id="dialog-content" style="white-space: pre-line;"></div>
+    <form method="dialog"><input type="submit" value="Close" /></form>
+  </dialog>
+</body>
+</html>

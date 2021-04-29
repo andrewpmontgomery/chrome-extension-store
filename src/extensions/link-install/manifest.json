@@ -1,0 +1,41 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1tIashTjhHZumWVPFpqcHMdPSEWNS/tSwZqUU5Rjlt22NDyV0J9A6P5XCZbhadPzsRTwar9ZYL3M39n0/TXK+xJu03DLe1bhVjzOehtn1kuSiq5slEAG1a1XFRG3D2YNTNLWgqVjwekx4s/PRZIG+JsKsOdxTnZtCaZ8nfPr2R3Yt4rVZAGBt8Ca8Tcv1DBdk3ux4IfzNW/6leVXUD2ouB57wy+usosOyJedt/HrekJC84CF1YzcWm2LqpaTAAemBBwW2dBBtVGQczJV7u9IVIlCDASjPCIWDMxy6U3xZnn3rmluugH2mUby4zeSrlce8gX6U9u7sHbh5QXjqSGvPQIDAQAB",
+  "manifest_version": 2,
+  "name": "Link Download Extension",
+  "version": "0.0.1",
+  "minimum_chrome_version": "88",
+  "description": "An extension which can be downloaded by clicking on a link via policy ExtensionInstallSources",
+  "icons": {
+    "128": "icon128.png"
+  },
+  "browser_action": {
+    "default_icon": "icon128.png"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "<all_urls>",
+    "activeTab",
+    "browsingData",
+    "contentSettings",
+    "cookies",
+    "enterprise.hardwarePlatform",
+    "history",
+    "idle",
+    "management",
+    "nativeMessaging",
+    "pageCapture",
+    "privacy",
+    "storage",
+    "tabs",
+    "webNavigation"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "http://localhost:5000/*"
+    ]
+  },
+  "update_url": "http://localhost:5000/extensions/linkclcacemnpnaidfknmbacmkcecjfd/update.xml"
+}

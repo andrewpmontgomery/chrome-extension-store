@@ -1,11 +1,15 @@
 {
-  "name": "force-extension",
-  "version": "1.0.0",
+  "name": "chrome-extension-store",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "make-crx": "node make/make-crx.js",
-    "start": "node make/make-crx.js && node make/start-chrome-and-host-crx.js",
+    "first-run": "node make/policy-create.module.js",
+    "last-run": "node make/policy-delete.module.js",
+    "start": "node make/start.js",
+    "build": "node make/start.js --no-host",
+    "copy-policy": "node make/policy-update.module.js",
+    "generate-known-pem": "node make/generate-known-pem.module.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src/ ./make/"
   },
@@ -13,10 +17,14 @@
   "author": "Andrew P Montgomery",
   "license": "MPL-2.0",
   "dependencies": {
-    "crx": "^5.0.1"
+    "crx": "^5.0.1",
+    "crx3-utils": "0.0.3",
+    "finalhandler": "^1.1.2",
+    "fs-extra": "^9.1.0",
+    "serve-static": "^1.14.1"
   },
   "devDependencies": {
-    "eslint": "^7.24.0",
+    "eslint": "^7.25.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
